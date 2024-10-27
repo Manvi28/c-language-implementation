@@ -1,0 +1,65 @@
+stack using array
+
+#include <stdio.h>
+int stack[100],top,n,x;
+void push(int data){
+    if(top>=n){
+        printf("stack overflow");
+    }
+    else{
+        top++;
+        stack[top]=data;
+    }
+}
+int pop(){
+    if(top<=-1){
+        printf("underflow");
+    }
+    else{
+        int p=stack[top];
+        top--;
+        return p;
+    }
+}
+void display(){
+    for(int i=top;i>=0;i--){
+        printf("%d ",stack[i]);
+        
+    }
+}
+int main() {
+    top=-1;
+    // Write C code here
+   printf("enter size of stack: ");
+   scanf("%d",&n);
+   int ch;
+   printf("\n 1.push \n 2.pop \n 3.display \n 4.exit \n");
+   
+   do{
+       printf("enter your choice: ");
+       scanf("%d",&ch);
+       switch(ch){
+           case 1:
+           int data;
+           printf("enter number: ");
+           scanf("%d",&data);
+           push(data);
+           break;
+           case 2:
+           x=pop();
+           printf("deleted element is %d\n",x);
+           
+           break;
+           case 3:
+           display();
+           break;
+           case 4:
+           printf("exit point");
+           break;
+           default:
+           printf("\nenter valid choice");
+       }
+   }
+   while(ch!=4);
+   return 0;
+}
