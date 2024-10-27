@@ -1,0 +1,62 @@
+queue using array
+
+#include<stdio.h>
+#define maxsize 10
+int queue[maxsize];
+    int front=-1;
+    int rear=-1;
+void push(){
+    if(rear==maxsize-1) printf("overflow\n");
+    else{
+        if(front==-1){
+            front++;
+        }
+        int data;
+        printf("enter data: ");
+        scanf("%d",&data);
+        rear++;
+        queue[rear]=data;
+    }
+    
+}
+void pop(){
+    if(front==-1)printf("underflow\n");
+    else{
+        int data=queue[front];
+        front++;
+        printf("popped element is %d\n",data);
+    }
+}
+void display(){
+    for(int i=front;i<=rear;i++){
+        printf("%d ",queue[i]);
+    }
+}
+int main(){
+    
+    printf("\n1.push\n2.pop\n3.display\n4.exit\n");
+    int ch;
+    do{
+        printf("enter a choice: ");
+        scanf("%d",&ch);
+        switch(ch){
+            case 1:
+            push();
+            break;
+            case 2:
+            pop();
+            break;
+            case 3:
+            display();
+            break;
+            case 4:
+            printf("exit");
+            break;
+            default:
+            printf("enter correct choice");
+            
+        }
+    }
+    while(ch!=4);
+        return 0;
+}
