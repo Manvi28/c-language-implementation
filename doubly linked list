@@ -1,0 +1,191 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the structure for a doubly linked list node
+typedef struct Node {
+    int data;
+    struct Node* prev;
+    struct Node* next;
+} Node;
+
+// Function to create a new node
+Node* createNode(int data) {
+    Node* newNode = (Node*) malloc(sizeof(Node));
+    if (!newNode) {
+        printf("Memory error\n");
+        return NULL;
+    }
+    newNode->data = data;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to create a doubly linked list
+Node* createDoublyLinkedList() {
+    Node* head = NULL;
+    int n;
+    printf("Enter the number of nodes: ");
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        int data;
+        printf("Enter node %d data: ", i + 1);
+        scanf("%d", &data);
+        Node* newNode = createNode(data);
+        if (head == NULL) {
+            head = newNode;
+        } else {
+            Node* temp = head;
+            while (temp->next != NULL) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+            newNode->prev = temp;
+        }
+    }
+    return head;
+}
+
+// Function to search for an item in the doubly linked list
+void searchItem(Node* head) {
+    int item;
+    printf("Enter the item to search: ");
+    scanf("%d", &item);
+    Node* temp = head;
+    int found = 0;
+    while (temp != NULL) {
+        if (temp->data == item) {
+            found = 1;
+            break;
+        }
+        temp = temp->next;
+    }
+    if (found) {
+        printf("%d found in the list\n", item);
+    } else {
+        printf("%d not found in the list\n", item);
+    }
+}
+
+// Function to display the items in the doubly linked list
+void displayList(Node* head) {
+    Node* temp = head;
+    printf("Doubly Linked List (Forward): ");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+
+    // Display in reverse order
+    temp = head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    printf("Doubly Linked List (Backward): ");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->prev;
+    }
+    printf("\n");
+}
+
+// Function to insert an item at a particular position
+void insertItem(Node** head) {
+    int pos, data;
+    printf("Enter the position to insert: ");
+    scanf("%d", &pos);
+    printf("Enter the data to insert: ");
+    scanf("%d", &data);
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+    } else if (pos == 1) {
+        newNode->next = *head;
+        (*head)->prev = newNode;
+        *head = newNode;
+    } else {
+        Node* temp = *head;
+        for (int i = 1; i < pos - 1 && temp != NULL; i++) {
+            temp = temp->next;
+        }
+        if (temp == NULL) {
+            printf("Position out of range\n");
+            return;
+        }
+        newNode->next = temp->next;
+        newNode->prev = temp;
+        if (temp->next != NULL) {
+            temp->next->prev = newNode;
+        }
+        temp->next = newNode;
+    }
+}
+
+// Function to delete an item from a particular position
+void deleteItem(Node** head) {
+    int pos;
+    printf("Enter the position to delete: ");
+    scanf("%d", &pos);
+    if (*head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+    if (pos == 1) {
+        Node* temp = *head;
+        *head = (*head)->next;
+        if (*head != NULL) {
+            (*head)->prev = NULL;
+        }
+        free(temp);
+    } else {
+        Node* temp = *head;
+        for (int i = 1; i < pos - 1 && temp != NULL; i++) {
+            temp = temp->next;
+        }
+        if (temp == NULL || temp->next == NULL) {
+            printf("Position out of range\n");
+            return;
+        }
+         Node* nodeToDelete = temp->next;
+        temp->next = temp->next->next;
+        if (temp->next != NULL) {
+            temp->next->prev = temp;
+        }
+        free(nodeToDelete);
+    }
+}
+
+
+int main() {
+    Node* head = createDoublyLinkedList();
+    int choice;
+    while (1) {
+        printf("1. Search item\n");
+        printf("2. Display list\n");
+        printf("3. Insert item\n");
+        printf("4. Delete item\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                searchItem(head);
+                break;
+            case 2:
+                displayList(head);
+                break;
+            case 3:
+                insertItem(&head);
+                break;
+            case 4:
+                deleteItem(&head);
+                break;
+            case 5:
+                return 0;
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+    return 0;
+}
