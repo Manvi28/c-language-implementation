@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Node structure
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+// Circular linked list structure
+typedef struct {
+    Node* head;
+} CircularLinkedList;
+
+// Function to create a new node
+Node* createNode(int data) {
+    Node* newNode = (Node*) malloc(sizeof(Node));
+    if (!newNode) {
+        printf("Memory error\n");
+        return NULL;
+    }
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to create a circular linked list
+CircularLinkedList* createCircularLinkedList() {
+    CircularLinkedList* list = (CircularLinkedList*) malloc(sizeof(CircularLinkedList));
+    if (!list) {
+        printf("Memory error\n");
+        return NULL;
+    }
+    list->head = NULL;
+    return list;
+}
+
+// Function to insert a node at the beginning of the list
+void insertAtBeginning(CircularLinkedList* list, int data) {
+    Node* newNode = createNode(data);
+    if (list->head == NULL) {
+        list->head = newNode;
+        newNode->next = newNode; // Circular link
+    } else {
+        Node* temp = list->head;
+        while (temp->next != list->head) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+        newNode->next = list->head;
+        list->head = newNode;
+    }
+}
+
+// Function to insert a node at the end of the list
+void insertAtEnd(CircularLinkedList* list, int data) {
+    Node* newNode = createNode(data);
+    if (list->head == NULL) {
+        list->head = newNode;
+        newNode->next = newNode; // Circular link
+    } else {
+        Node* temp = list->head;
+        while (temp->next != list->head) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+        newNode->next = list->head;
+    }
+}
+
+// Function to delete a node with a given key
+void deleteNode(CircularLinkedList* list, int key) {
+    if (list->head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+    if (list->head->data == key) {
+        if (list->head->next == list->head) {
+            free(list->head);
+            list->head = NULL;
+        } else {
+            Node* temp = list->head;
+            while (temp->next != list->head) {
+                temp = temp->next;
+            }
+            temp->next = list->head->next;
+            free(list->head);
+            list->head = temp->next;
+        }
+    } else {
+        Node* temp = list->head;
+        while (temp->next != list->head) {
+            if (temp->next->data == key) {
+                Node* nodeToDelete = temp->next;
+                temp->next = temp->next->next;
+                free(nodeToDelete);
+                return;
+            }
+            temp = temp->next;
+        }
+        printf("Node not found\n");
+    }
+}
+
+// Function to traverse the list
+void traverse(CircularLinkedList* list) {
+    if (list->head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+    Node* temp = list->head;
+    do {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    } while (temp != list->head);
+    printf("\n");
+}
+
+int main() {
+    CircularLinkedList* list = createCircularLinkedList();
+
+    insertAtEnd(list, 10);
+    insertAtEnd(list, 20);
+    insertAtEnd(list, 30);
+    insertAtBeginning(list, 5);
+
+    printf("Traversing the list: ");
+    traverse(list);
+
+    deleteNode(list, 20);
+
+    printf("Traversing the list after deletion: ");
+    traverse(list);
+
+    return 0;
+}
