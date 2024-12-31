@@ -1,0 +1,116 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for priority queue node
+typedef struct Node {
+    int data;
+    int priority;
+    struct Node* next;
+} Node;
+
+// Structure for priority queue
+typedef struct {
+    Node* front;
+} PriorityQueue;
+
+// Function to create a new node
+Node* createNode(int data, int priority) {
+    Node* newNode = (Node*) malloc(sizeof(Node));
+    if (!newNode) {
+        printf("Memory error\n");
+        return NULL;
+    }
+    newNode->data = data;
+    newNode->priority = priority;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to create a priority queue
+PriorityQueue* createPriorityQueue() {
+    PriorityQueue* queue = (PriorityQueue*) malloc(sizeof(PriorityQueue));
+    if (!queue) {
+        printf("Memory error\n");
+        return NULL;
+    }
+    queue->front = NULL;
+    return queue;
+}
+
+// Function to check if the priority queue is empty
+int isEmpty(PriorityQueue* queue) {
+    return queue->front == NULL;
+}
+
+// Function to insert a new element into the priority queue
+void enqueue(PriorityQueue* queue, int data, int priority) {
+    Node* newNode = createNode(data, priority);
+    if (isEmpty(queue)) {
+        queue->front = newNode;
+    } else {
+        if (priority > queue->front->priority) {
+            newNode->next = queue->front;
+            queue->front = newNode;
+        } else {
+            Node* temp = queue->front;
+            while (temp->next != NULL && temp->next->priority >= priority) {
+                temp = temp->next;
+            }
+            newNode->next = temp->next;
+            temp->next = newNode;
+        }
+    }
+}
+
+// Function to remove the highest-priority element from the priority queue
+int dequeue(PriorityQueue* queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty\n");
+        return -1;
+    }
+    int data = queue->front->data;
+    Node* temp = queue->front;
+    queue->front = queue->front->next;
+    free(temp);
+    return data;
+}
+
+// Function to get the highest-priority element from the priority queue
+int peek(PriorityQueue* queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty\n");
+        return -1;
+    }
+    return queue->front->data;
+}
+
+// Function to print the priority queue
+void printQueue(PriorityQueue* queue) {
+    Node* temp = queue->front;
+    while (temp != NULL) {
+        printf("(%d, %d) ", temp->data, temp->priority);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    PriorityQueue* queue = createPriorityQueue();
+
+    enqueue(queue, 10, 3);
+    enqueue(queue, 20, 2);
+    enqueue(queue, 30, 1);
+    enqueue(queue, 40, 4);
+
+    printf("Priority Queue: ");
+    printQueue(queue);
+
+    printf("Highest-priority element: %d\n", peek(queue));
+
+    printf("Dequeued element: %d\n", dequeue(queue));
+
+    printf("Priority Queue after dequeue: ");
+    printQueue(queue);
+
+    return 0;
+}
