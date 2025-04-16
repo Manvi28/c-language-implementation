@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+// Structure to represent an edge
+struct Edge {
+    int src, dest, weight;
+};
+
+// Function to compare two edges (used in qsort)
+int compare(const void *a, const void *b) {
+    return ((struct Edge *)a)->weight - ((struct Edge *)b)->weight;
+}
+
+// Find set of an element (with path compression)
+int find(int parent[], int i) {
+    if (parent[i] != i)
+        parent[i] = find(parent, parent[i]);
+    return parent[i];
+}
+
+// Union of two sets
+void unionSets(int parent[], int x, int y) {
+    int xroot = find(parent, x);
+    int yroot = find(parent, y);
+    parent[yroot] = xroot;
+}
+
+int main() {
+    int V, E;
+    struct Edge edges[MAX];
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &V);
+
+    printf("Enter number of edges: ");
+    scanf("%d", &E);
+
+    printf("Enter each edge (src dest weight):\n");
+    for (int i = 0; i < E; i++) {
+        scanf("%d%d%d", &edges[i].src, &edges[i].dest, &edges[i].weight);
+    }
+
+    // Sort edges by weight
+    qsort(edges, E, sizeof(struct Edge), compare);
+
+    int parent[V];
+    for (int i = 0; i < V; i++)
+        parent[i] = i;
+
+    printf("\nEdges in the Minimum Spanning Tree:\n");
+    int mstWeight = 0;
+    int count = 0;
+
+    for (int i = 0; i < E && count < V - 1; i++) {
+        int u = edges[i].src;
+        int v = edges[i].dest;
+
+        int set_u = find(parent, u);
+        int set_v = find(parent, v);
+
+        // If including this edge doesn't cause a cycle
+        if (set_u != set_v) {
+            printf("%d - %d : %d\n", u, v, edges[i].weight);
+            mstWeight += edges[i].weight;
+            unionSets(parent, set_u, set_v);
+            count++;
+        }
+    }
+
+    printf("Total cost of MST: %d\n", mstWeight);
+    return 0;
+}
