@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define N 8  // Size of the chessboard (8x8)
+
+int board[N][N];
+
+// Function to print the board
+void printBoard() {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("|%c| ", board[i][j] ? 'Q' : 'x');
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+// Function to check if a queen can be placed at board[row][col]
+bool isSafe(int row, int col) {
+    int i, j;
+
+    // Check column
+    for (i = 0; i < row; i++)
+        if (board[i][col])
+            return false;
+
+    // Check upper-left diagonal
+    for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
+        if (board[i][j])
+            return false;
+
+    // Check upper-right diagonal
+    for (i = row, j = col; i >= 0 && j < N; i--, j++)
+        if (board[i][j])
+            return false;
+
+    return true;
+}
+
+// Recursive function to solve the 8-Queens problem
+bool solveNQueens(int row) {
+    if (row >= N) {
+        // All queens are placed successfully
+        printBoard();
+        return true;  // Return true if only one solution is needed
+    }
+
+    bool res = false;
+    for (int col = 0; col < N; col++) {
+        if (isSafe(row, col)) {
+            board[row][col] = 1;  // Place queen
+
+            // Recur to place the rest
+            res = solveNQueens(row + 1) || res;
+
+            // Backtrack
+            board[row][col] = 0;
+        }
+    }
+
+    return res;
+}
+
+int main() {
+    // Initialize board with zeros
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < N; j++)
+            board[i][j] = 0;
+
+    solveNQueens(0);
+
+    return 0;
+}
