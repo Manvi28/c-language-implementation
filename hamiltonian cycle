@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX 20  // maximum number of vertices
+
+int V; // Number of vertices
+
+void printSolution(int path[]) {
+    printf("Hamiltonian Cycle exists:\nCycle is: ");
+    for (int i = 0; i < V; i++)
+        printf("%d ", path[i]);
+    printf("%d\n", path[0]); // last vertex connects back to start
+}
+
+bool isSafe(int v, bool graph[MAX][MAX], int path[], int pos) {
+    // Check if current vertex is adjacent to previous vertex
+    if (!graph[path[pos - 1]][v])
+        return false;
+
+    // Check if vertex already included
+    for (int i = 0; i < pos; i++)
+        if (path[i] == v)
+            return false;
+
+    return true;
+}
+
+bool hamCycleUtil(bool graph[MAX][MAX], int path[], int pos) {
+    // Base case: All vertices are included
+    if (pos == V) {
+        // Check if there is an edge from last to first vertex
+        if (graph[path[pos - 1]][path[0]])
+            return true;
+        else
+            return false;
+    }
+
+    // Try different vertices
+    for (int v = 1; v < V; v++) { // Start from 1 because 0 is starting vertex
+        if (isSafe(v, graph, path, pos)) {
+            path[pos] = v;
+
+            if (hamCycleUtil(graph, path, pos + 1))
+                return true;
+
+            // Backtracking
+            path[pos] = -1;
+        }
+    }
+
+    return false;
+}
+
+bool hamCycle(bool graph[MAX][MAX]) {
+    int path[MAX];
+    for (int i = 0; i < V; i++)
+        path[i] = -1;
+
+    // Start at vertex 0
+    path[0] = 0;
+
+    if (!hamCycleUtil(graph, path, 1)) {
+        printf("Solution does not exist\n");
+        return false;
+    }
+
+    printSolution(path);
+    return true;
+}
+
+int main() {
+    bool graph[MAX][MAX];
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &V);
+
+    printf("Enter adjacency matrix (only 0 or 1):\n");
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            int x;
+            scanf("%d", &x);
+            graph[i][j] = (x == 1);
+        }
+    }
+
+    hamCycle(graph);
+
+    return 0;
+}
