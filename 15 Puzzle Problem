@@ -1,0 +1,91 @@
+#include <stdio.h>
+
+#define N 4
+
+int goal[N][N] = {
+    {1, 2, 3, 4},
+    {5, 6, 7, 8},
+    {9, 10, 11, 12},
+    {13, 14, 15, 0}
+};
+
+void printBoard(int board[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (board[i][j] == 0)
+                printf(" _ ");
+            else
+                printf("%2d ", board[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+int isGoal(int board[N][N]) {
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < N; j++)
+            if (board[i][j] != goal[i][j])
+                return 0;
+    return 1;
+}
+
+void findZero(int board[N][N], int *x, int *y) {
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < N; j++)
+            if (board[i][j] == 0) {
+                *x = i;
+                *y = j;
+                return;
+            }
+}
+
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+int main() {
+    int board[N][N];
+    int x, y;
+    int moveCount = 0;
+
+    printf("Enter the initial 4x4 board (use 0 for blank):\n");
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < N; j++)
+            scanf("%d", &board[i][j]);
+
+    printf("\nInitial Board:\n");
+    printBoard(board);
+
+    findZero(board, &x, &y);
+
+    while (!isGoal(board)) {
+        // Simple greedy move: try to move blank towards bottom-right
+        if (y < N-1) {
+            swap(&board[x][y], &board[x][y+1]);
+            y = y + 1;
+        }
+        else if (x < N-1) {
+            swap(&board[x][y], &board[x+1][y]);
+            x = x + 1;
+        }
+        else if (y > 0) {
+            swap(&board[x][y], &board[x][y-1]);
+            y = y - 1;
+        }
+        else if (x > 0) {
+            swap(&board[x][y], &board[x-1][y]);
+            x = x - 1;
+        }
+        
+        moveCount++;
+        printf("Move %d:\n", moveCount);
+        printBoard(board);
+    }
+
+    printf("Puzzle solved in %d moves!\n", moveCount);
+
+    return 0;
+}
