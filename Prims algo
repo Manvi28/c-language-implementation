@@ -1,3 +1,6 @@
+Time Complexity	O(n³)
+Space Complexity	O(n²)
+
 #include <stdio.h>
 #define INF 9999
 #define MAX 100
