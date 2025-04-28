@@ -1,4 +1,7 @@
 // Online C compiler to run C program online
+Time Complexity	O(n log n)
+Space Complexity	O(n)
+
 #include <stdio.h>
 #include <stdlib.h>
 struct Items{
