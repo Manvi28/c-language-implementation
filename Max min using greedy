@@ -1,0 +1,39 @@
+// Online C compiler to run C program online
+#include <stdio.h>
+void findans(int arr[],int s,int e,int *max,int *min){
+    int mid,max1,max2,min1,min2;
+    if(s==e){
+        *max=*min=arr[s];
+        return;
+    }
+    if(e==s+1){
+        if(arr[s]>arr[e]){
+            *max=arr[s];
+            *min=arr[e];
+        }else{
+            *max=arr[e];
+            *min=arr[s];
+        }
+        return;
+    }
+    mid=(s+e)/2;
+    findans(arr,s,mid,&max1,&min1);
+    findans(arr,mid+1,e,&max2,&min2);
+    *min=min1>min2?min2:min1;
+    *max=max1>max2?max1:max2;
+}
+int main() {
+  int n;
+  printf("enter no of elements: ");
+  scanf("%d",&n);
+  int arr[n];
+  printf("enter elemenst of array: \n");
+  for(int i=0;i<n;i++){
+      scanf("%d",&arr[i]);
+  }
+  int max,min;
+  findans(arr,0,n-1,&max,&min);
+  printf("max element is %d and min element is %d",max,min);
+
+    return 0;
+}
