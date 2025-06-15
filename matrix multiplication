@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <limits.h>
+
+// Function to compute minimum number of multiplications
+int MatrixChainOrder(int p[], int i, int j) {
+    if (i == j)
+        return 0;
+
+    int min = INT_MAX;
+
+    for (int k = i; k < j; k++) {
+        int count = MatrixChainOrder(p, i, k)
+                  + MatrixChainOrder(p, k + 1, j)
+                  + p[i - 1] * p[k] * p[j];
+
+        if (count < min)
+            min = count;
+    }
+
+    return min;
+}
+
+int main() {
+    int n;
+    printf("Enter number of matrices: ");
+    scanf("%d", &n);
+
+    int p[n + 1];
+    printf("Enter dimensions (p[0] to p[%d]):\n", n);
+    for (int i = 0; i <= n; i++) {
+        scanf("%d", &p[i]);
+    }
+
+    int minCost = MatrixChainOrder(p, 1, n);
+    printf("Minimum number of scalar multiplications: %d\n", minCost);
+
+    return 0;
+}
