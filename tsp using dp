@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX 10
+#define INF 99999
+
+int n;
+int cost[MAX][MAX];
+int dp[MAX][MAX];  // dp[current][visitedMask] but with visitedCount
+
+int visited[MAX];
+
+// Recursive function
+int tsp(int current, int count) {
+    if (count == n) {
+        return cost[current][0];  // return to starting city
+    }
+
+    if (dp[current][count] != -1)
+        return dp[current][count];
+
+    int ans = INF;
+
+    for (int i = 0; i < n; i++) {
+        if (!visited[i]) {
+            visited[i] = 1;
+            int temp = cost[current][i] + tsp(i, count + 1);
+            if (temp < ans) ans = temp;
+            visited[i] = 0;
+        }
+    }
+
+    return dp[current][count] = ans;
+}
+
+int main() {
+    printf("Enter number of cities: ");
+    scanf("%d", &n);
+
+    printf("Enter cost matrix:\n");
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            scanf("%d", &cost[i][j]);
+
+    // Initialize dp and visited arrays
+    for (int i = 0; i < n; i++) {
+        visited[i] = 0;
+        for (int j = 0; j < n; j++)
+            dp[i][j] = -1;
+    }
+
+    visited[0] = 1;  // start from city 0
+
+    int minCost = tsp(0, 1);  // starting from city 0, 1 city visited
+    printf("Minimum TSP tour cost: %d\n", minCost);
+
+    return 0;
+}
