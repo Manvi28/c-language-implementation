@@ -1,91 +1,105 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #define N 4
+
+int dx[] = {1, 0, -1, 0}; // Down, Right, Up, Left
+int dy[] = {0, 1, 0, -1};
+const char* moveName[] = {"Down", "Right", "Up", "Left"};
 
 int goal[N][N] = {
     {1, 2, 3, 4},
     {5, 6, 7, 8},
-    {9, 10, 11, 12},
-    {13, 14, 15, 0}
+    {9,10,11,12},
+    {13,14,15, 0}
 };
-
-void printBoard(int board[N][N]) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            if (board[i][j] == 0)
-                printf(" _ ");
-            else
-                printf("%2d ", board[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
 
 int isGoal(int board[N][N]) {
     for (int i = 0; i < N; i++)
-        for (int j = 0; j < N; j++)
-            if (board[i][j] != goal[i][j])
-                return 0;
+    for (int j = 0; j < N; j++)
+        if (board[i][j] != goal[i][j])
+            return 0;
     return 1;
 }
 
-void findZero(int board[N][N], int *x, int *y) {
-    for (int i = 0; i < N; i++)
+void printBoard(int board[N][N]) {
+    for (int i = 0; i < N; i++, printf("\n"))
         for (int j = 0; j < N; j++)
-            if (board[i][j] == 0) {
-                *x = i;
-                *y = j;
-                return;
-            }
+            board[i][j] ? printf("%2d ", board[i][j]) : printf(" _ ");
+    printf("\n");
+}
+
+// Replaced Manhattan with Misplaced Tiles count
+int misplaced(int board[N][N]) {
+    int count = 0;
+    for (int i = 0; i < N; i++)
+    for (int j = 0; j < N; j++)
+        if (board[i][j] != 0 && board[i][j] != goal[i][j])
+            count++;
+    return count;
 }
 
 void swap(int *a, int *b) {
-    int temp = *a;
-    *a = *b;
-    *b = temp;
+    int t = *a; *a = *b; *b = t;
+}
+
+int isInside(int x, int y) {
+    return x >= 0 && y >= 0 && x < N && y < N;
+}
+
+void solve(int board[N][N], int x, int y, int moves) {
+    if (isGoal(board)) {
+        printf("Solved in %d moves!\n", moves);
+        return;
+    }
+
+    int bestScore = 9999, bestDir = -1, newX = x, newY = y;
+
+    for (int d = 0; d < 4; d++) {
+        int nx = x + dx[d], ny = y + dy[d];
+        if (!isInside(nx, ny)) continue;
+
+        swap(&board[x][y], &board[nx][ny]);
+        int score = misplaced(board);
+        if (score < bestScore) {
+            bestScore = score;
+            bestDir = d;
+            newX = nx;
+            newY = ny;
+        }
+        swap(&board[x][y], &board[nx][ny]); // Undo move
+    }
+
+    if (bestDir != -1) {
+        newX = x + dx[bestDir];
+        newY = y + dy[bestDir];
+        swap(&board[x][y], &board[newX][newY]);
+
+        printf("Move: %s\n", moveName[bestDir]);
+        printBoard(board);
+
+        solve(board, newX, newY, moves + 1);
+    }
 }
 
 int main() {
-    int board[N][N];
-    int x, y;
-    int moveCount = 0;
+    int board[N][N], x, y;
 
-    printf("Enter the initial 4x4 board (use 0 for blank):\n");
+    printf("Enter your 4x4 puzzle (use 0 for blank):\n");
     for (int i = 0; i < N; i++)
-        for (int j = 0; j < N; j++)
-            scanf("%d", &board[i][j]);
-
-    printf("\nInitial Board:\n");
-    printBoard(board);
-
-    findZero(board, &x, &y);
-
-    while (!isGoal(board)) {
-        // Simple greedy move: try to move blank towards bottom-right
-        if (y < N-1) {
-            swap(&board[x][y], &board[x][y+1]);
-            y = y + 1;
-        }
-        else if (x < N-1) {
-            swap(&board[x][y], &board[x+1][y]);
-            x = x + 1;
-        }
-        else if (y > 0) {
-            swap(&board[x][y], &board[x][y-1]);
-            y = y - 1;
-        }
-        else if (x > 0) {
-            swap(&board[x][y], &board[x-1][y]);
-            x = x - 1;
-        }
-        
-        moveCount++;
-        printf("Move %d:\n", moveCount);
-        printBoard(board);
+    for (int j = 0; j < N; j++) {
+        scanf("%d", &board[i][j]);
+        if (board[i][j] == 0) x = i, y = j;
     }
 
-    printf("Puzzle solved in %d moves!\n", moveCount);
-
+    printf("\nInitial State:\n");
+    printBoard(board);
+    solve(board, x, y, 0);
+    printf("Move: Up");
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
+            printf("%d",goal[i][j]);
+        }
+    }
     return 0;
 }
