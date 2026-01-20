@@ -3,7 +3,7 @@
 
 #define V 20  // Max vertices ko bada diya for safety
 
-// Function to print the colors assigned
+// Function to printthe colors assigned
 void printSolution(int color[], int n) {
     printf("Solution Exists:\nFollowing are the assigned colors:\n");
     for (int i = 0; i < n; i++)
